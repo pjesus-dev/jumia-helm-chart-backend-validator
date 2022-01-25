@@ -1,0 +1,51 @@
+replicaCount: 3
+namespace: jumia_phone_validator
+Name: validator-backend
+
+image:
+  repository: add_your_ecr_repo
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+resources: 
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+labels:
+  app.kubernetes.io/name: validator-backend
+ 
+matchLabels:
+  app.kubernetes.io/name: validator-backend
+  
+selector:
+  app.kubernetes.io/name: validator-backend
+
+imagePullSecrets: []
+
+podAnnotations: {}
+
+service:
+  type: LoadBalancer
+  targetPort: 8080
+  port: 80
+
+annotations:
+  service.beta.kubernetes.io/aws-load-balancer-type: external
+  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+  service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 9
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+configs:
+  POSTGRES_DB_ENDPOINT: RDS endpoint without the ":port/database_name"
+  POSTGRES_DB_USERNAME: RDS username
+  POSTGRES_DB_PASSWORD: RDS password
